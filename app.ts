@@ -11,6 +11,7 @@ app.set('views', path.join(__dirname, 'views'));
 
 // Middleware to parse JSON
 app.use(express.json());
+app.use(express.urlencoded({extended:true}))
 
 // Root route to render your EJS file (e.g., index.ejs)
 app.use('/',router)

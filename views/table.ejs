@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Management System</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
     <style>
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -112,64 +116,99 @@
                     <th class="text-left">Name</th>
                     <th class="text-left">Email</th>
                     <th class="text-left">Phone</th>
+                      <th class="text-left">course</th>
                     <th class="text-left">Actions</th>
                 </tr>
             </thead>
             <tbody id="studentTableBody">
-                <!-- Student data will be populated dynamically -->
+                <%studentData.forEach((data,i)=>{%>
+              <tr>
+                <td><%=i+1%></td>
+                <td><%=data.name%></td>
+                <td><%=data.email%></td>
+                <td><%=data.phone%></td>
+                <td><%=data.course%></td>
+            <td class="space-x-2">
+  <button 
+    class="bg-yellow-500  text-white font-semibold py-1 px-3 rounded transition duration-200" onclick="populate('<%=data._id%>','<%=data.name%>','<%=data.email%>','<%=data.phone%>','<%=data.course%>')">
+    Edit
+  </button>
+  <button 
+    class="bg-red-500 hover:bg-red-600 text-white font-semibold py-1 px-3 rounded transition duration-200">
+    Delete
+  </button>
+</td>
+
+              </tr>
+              <%})%>
             </tbody>
         </table>
 
         <!-- Modal for Adding/Editing Student -->
-        <div id="studentModal" class="modal">
+        <div id="addModal" class="modal">
             <div class="modal-content">
-                <h2 id="modalTitle" class="text-xl font-semibold mb-4">Add Student</h2>
-                <input type="hidden" id="studentId">
+                <h2 id="addModalTitle" class="text-xl font-semibold mb-4">Add Student</h2>
                 <input type="text" id="studentName" placeholder="Name" class="w-full px-3 py-2 mb-3 border border-gray-300 rounded-lg">
+               <label id="nameMissing" class="text-red-600 text-sm mt-1 block"></label>
                 <input type="email" id="studentEmail" placeholder="Email" class="w-full px-3 py-2 mb-3 border border-gray-300 rounded-lg">
+           <label id="emailMissing" class="text-red-600 text-sm mt-1 block"></label>
                 <input type="tel" id="studentPhone" placeholder="Phone" class="w-full px-3 py-2 mb-3 border border-gray-300 rounded-lg">
+                  <label id="phoneMissing" class="text-red-600 text-sm mt-1 block"></label>
+  <label for="course" class="block text-sm font-medium text-gray-700 mb-2">Select Course</label>
+  <select id="addCourse" name="course" class="block w-full px-4 py-2 text-base text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+    <option disabled selected>Select a course</option>
+    <option>Computer Science</option>
+    <option>Information Technology</option>
+    <option>Electronics and Communication</option>
+    <option>Mechanical Engineering</option>
+    <option>Civil Engineering</option>
+    <option>Electrical Engineering</option>
+    <option>Business Administration</option>
+    <option>Psychology</option>
+    <option>Biotechnology</option>
+    <option>Economics</option>
+  </select>
+  <br><br>
                 <div class="flex justify-end">
                     <button class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg mr-2 transition duration-200" onclick="closeModal()">Cancel</button>
                     <button class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition duration-200" onclick="saveStudent()">Save</button>
                 </div>
             </div>
         </div>
+
+         <div id="editModal" class="modal">
+            <div class="modal-content">
+                <h2 id="editModalTitle" class="text-xl font-semibold mb-4">Edit Student Info</h2>
+                <input type="hidden" id="studentId">
+                <input type="text" id="editName" placeholder="Name" class="w-full px-3 py-2 mb-3 border border-gray-300 rounded-lg">
+                 <label id="editNameMissing" class="text-red-600 text-sm mt-1 block"></label>
+                <input type="email" id="editEmail" placeholder="Email" class="w-full px-3 py-2 mb-3 border border-gray-300 rounded-lg">
+                 <label id="editEmailMissing" class="text-red-600 text-sm mt-1 block"></label>
+                <input type="tel" id="editPhone" placeholder="Phone" class="w-full px-3 py-2 mb-3 border border-gray-300 rounded-lg">
+                   <label id="editPhoneMissing" class="text-red-600 text-sm mt-1 block"></label>
+                <label for="editCourse" class="block text-sm font-medium text-gray-700 mb-2">Select Course</label>
+  <select id="editCourse" name="course" class="block w-full px-4 py-2 text-base text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+    <option disabled selected>Select a course</option>
+    <option>Computer Science</option>
+    <option>Information Technology</option>
+    <option>Electronics and Communication</option>
+    <option>Mechanical Engineering</option>
+    <option>Civil Engineering</option>
+    <option>Electrical Engineering</option>
+    <option>Business Administration</option>
+    <option>Psychology</option>
+    <option>Biotechnology</option>
+    <option>Economics</option>
+  </select>
+                <div class="flex justify-end">
+                    <button class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg mr-2 transition duration-200" onclick="closeEditModal()">Cancel</button>
+                    <button class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition duration-200" onclick="editStudent()">Save</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
-        // Static student data stored in an array
-        let students = [
-            { id: 1, name: "John Doe", email: "john.doe@example.com", phone: "(123) 456-7890" },
-            { id: 2, name: "Jane Smith", email: "jane.smith@example.com", phone: "(234) 567-8901" },
-            { id: 3, name: "Michael Brown", email: "michael.brown@example.com", phone: "(345) 678-9012" },
-            { id: 4, name: "Emily Davis", email: "emily.davis@example.com", phone: "(456) 789-0123" },
-            { id: 5, name: "William Johnson", email: "william.johnson@example.com", phone: "(567) 890-1234" }
-        ];
-
-        // Function to render the student table
-        function renderTable(data = students) {
-            const tableBody = document.getElementById('studentTableBody');
-            tableBody.innerHTML = ''; // Clear existing rows
-            data.forEach(student => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${student.id}</td>
-                    <td>${student.name}</td>
-                    <td>${student.email}</td>
-                    <td>${student.phone}</td>
-                    <td class="actions">
-                        <button class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded transition duration-200" onclick="editStudent(${student.id})">Edit</button>
-                        <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded transition duration-200" onclick="deleteStudent(${student.id})">Delete</button>
-                    </td>
-                `;
-                tableBody.appendChild(row);
-            });
-        }
-
-        // Initial render of the table
-        renderTable();
-
-        // Search functionality
         document.getElementById('searchInput').addEventListener('input', function(e) {
             const searchTerm = e.target.value.toLowerCase();
             const filteredStudents = students.filter(student =>
@@ -181,18 +220,28 @@
         });
 
         function openAddModal() {
-            document.getElementById('modalTitle').textContent = 'Add Student';
             document.getElementById('studentId').value = '';
             document.getElementById('studentName').value = '';
             document.getElementById('studentEmail').value = '';
             document.getElementById('studentPhone').value = '';
-            document.getElementById('studentModal').style.display = 'flex';
+            document.getElementById('addModal').style.display = 'flex';
         }
 
         function closeModal() {
-            document.getElementById('studentModal').style.display = 'none';
+            document.getElementById('addModal').style.display = 'none';
         }
-
+         function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+ function populate(id,name,email,phone,course)
+ {
+    document.getElementById('studentId').value =id;
+            document.getElementById('editName').value = name;
+            document.getElementById('editEmail').value =email;
+            document.getElementById('editPhone').value =phone;
+             document.getElementById('editCourse').value =course;
+            document.getElementById('editModal').style.display = 'flex';
+ }
         // Delete student function
         function deleteStudent(id) {
             if (confirm('Are you sure you want to delete this student?')) {
@@ -200,18 +249,193 @@
                 renderTable();
             }
         }
+        function isValidEmail(email) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+function isValidPhone(phone) {
+  const phoneRegex = /^(\+91[-\s]?)?[6-9]\d{9}$/; // for Indian mobile numbers
+  return phoneRegex.test(phone);
+}
 
-        // Placeholder functions for other CRUD operations
-        function saveStudent() {
-            // Implement save logic (Create/Update)
-            closeModal();
+    function saveStudent() {
+        const name = document.getElementById('studentName').value.trim();
+        const email = document.getElementById('studentEmail').value.trim();
+        const phone = document.getElementById('studentPhone').value.trim();
+        const course = document.getElementById('addCourse').value;
+
+        let isValid = true;
+
+        // Clear previous error messages
+        document.getElementById('nameMissing').textContent = '';
+        document.getElementById('emailMissing').textContent = '';
+        document.getElementById('phoneMissing').textContent = '';
+
+        if (!name) {
+            document.getElementById('nameMissing').textContent = '*Name is required';
+            isValid = false;
         }
 
-        function editStudent(id) {
-            // Implement edit logic
-            document.getElementById('modalTitle').textContent = 'Edit Student';
-            document.getElementById('studentModal').style.display = 'flex';
+        if (!email) {
+            document.getElementById('emailMissing').textContent = '*Email is required';
+            isValid = false;
+        } else if (!isValidEmail(email)) {
+            document.getElementById('emailMissing').textContent = '*Invalid email format';
+            isValid = false;
         }
+
+        if (!phone) {
+            document.getElementById('phoneMissing').textContent = '*Phone is required';
+            isValid = false;
+        } else if (!isValidPhone(phone)) {
+            document.getElementById('phoneMissing').textContent = '*Invalid phone format';
+            isValid = false;
+        }
+
+        if (course === "Select a course") {
+            Swal.fire({
+                title: 'Please select a course!',
+                icon: 'warning',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000
+            });
+            isValid = false;
+        }
+
+        if (!isValid) return;
+
+        $.ajax({
+          url: '/api/students', 
+          type: 'POST',         
+          data: {name,email,phone,course},
+          success: function (response) {
+           Swal.fire({
+            title: 'Student saved successfully!',
+            icon: 'success',
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 2000
+        });
+             closeModal();
+          },
+          error: function(xhr, status, error) {
+    let message = "An error occurred"; // default message
+
+    try {
+        const responseJson = JSON.parse(xhr.responseText);
+        if (responseJson.message) {
+            message = responseJson.message;
+        }
+    } catch (e) {
+        // If parsing fails, keep default message
+    }
+
+    Swal.fire({
+        title: message,
+        icon: 'error',
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000
+    });
+}
+        });
+        }
+
+       function editStudent()
+       {
+        const id=document.getElementById("studentId").value.trim()
+         const name = document.getElementById('editName').value.trim();
+        const email = document.getElementById('editEmail').value.trim();
+        const phone = document.getElementById('editPhone').value.trim();
+        const course = document.getElementById('editCourse').value;
+
+        let isValid = true;
+
+        // Clear previous error messages
+        document.getElementById('editNameMissing').textContent = '';
+        document.getElementById('editEmailMissing').textContent = '';
+        document.getElementById('editPhoneMissing').textContent = '';
+
+        if (!name) {
+            document.getElementById('editNameMissing').textContent = '*Name is required';
+            isValid = false;
+        }
+
+        if (!email) {
+            document.getElementById('editEmailMissing').textContent = '*Email is required';
+            isValid = false;
+        } else if (!isValidEmail(email)) {
+            document.getElementById('editEmailMissing').textContent = '*Invalid email format';
+            isValid = false;
+        }
+
+        if (!phone) {
+            document.getElementById('editPhoneMissing').textContent = '*Phone is required';
+            isValid = false;
+        } else if (!isValidPhone(phone)) {
+            document.getElementById('editPhoneMissing').textContent = '*Invalid phone format';
+            isValid = false;
+        }
+
+        if (course === "Select a course") {
+            Swal.fire({
+                title: 'Please select a course!',
+                icon: 'warning',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000
+            });
+            isValid = false;
+        }
+
+        if (!isValid) return;
+
+        $.ajax({
+          url: '/api/students', 
+          type: 'PATCH',         
+          data: {id,name,email,phone,course},
+          success: function (response) {
+           Swal.fire({
+            title: 'Student updated successfully!',
+            icon: 'success',
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 2000
+        });
+             closeEditModal();
+          },
+          error: function(xhr, status, error) {
+    let message = "An error occurred"; // default message
+
+    try {
+        const responseJson = JSON.parse(xhr.responseText);
+        if (responseJson.message) {
+            message = responseJson.message;
+        }
+    } catch (e) {
+        // If parsing fails, keep default message
+    }
+
+    Swal.fire({
+        title: message,
+        icon: 'error',
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000
+    });
+}
+        });
+        }
+    
+
+
     </script>
 </body>
 </html>
