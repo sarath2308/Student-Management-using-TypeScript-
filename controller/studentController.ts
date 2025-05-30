@@ -94,8 +94,31 @@ console.log(req.body);
   }
 };
 
+
+const deleteStudent=async(req:Request,res:Response):Promise<void>=>
+{
+  try {
+    const{id}=req.body;
+    let studentData=await Student.findById(id)
+    if(!studentData)
+    {
+        res.status(400).json({message:'not found'})
+        return;
+    }
+    else{
+     studentData.isDeleted=true;
+     await studentData.save();
+     res.status(201).json({message:"delete success"})
+     return;
+    }
+  } catch (error) {
+    console.log(error);
+    
+  }
+}
 export default{
     renderTable,
     newStudent,
-    editStudent
+    editStudent,
+    deleteStudent
 }
